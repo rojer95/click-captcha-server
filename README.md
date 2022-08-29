@@ -6,17 +6,20 @@
 ## Install
 
 ```bash
-$ yarn install
+$ yarn add click-captcha-server
 ```
 
-```bash
-$ npm run dev
-$ npm run build
+## Quickstart
+
+```ts
+import ClickCaptcha from "click-captcha-server";
+
+const clickCaptcha = new ClickCaptcha();
+const { img, front, answer, count } = await this.clickCaptcha.generate();
+const input = ctx.body; // input 来自用户点选坐标
+const pass = this.clickCaptcha.check(input, answer);
+console.log(pass ? '验证成功': '验证失败')
 ```
-
-## Options
-
-TODO
 
 ## LICENSE
 
