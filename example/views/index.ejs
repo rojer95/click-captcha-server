@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Click Captcha</title>
+    <style>
+      #captcha{
+        position: relative;
+        width: 300px;
+        height: 200px;
+      }
+
+      #captcha .point{
+        position: absolute;
+        cursor: pointer;
+        height: 20px;
+        line-height: 20px;
+        width: 20px;
+        background-color: #FFFFFF;
+        border-radius: 50%;
+        border: 4px solid #4e6ef2;
+        color: #4e6ef2;
+        text-align: center;
+
+      }
+      
+    </style>
+  </head>
+  <body>
+    <div style="background: url(<%=img%>);" id="captcha" onclick="addPoint(event)" >
+    </div>
+    <p>
+      请依次点选：<%for(let i=0;i<front.length;i++){%>
+        <span><%=front[i]%></span>、
+    <%}%>   
+    </p>
+    <script>
+      const captcha = document.getElementById('captcha')
+      var points = [];
+      function renderPoint(){
+        const pointHtml = [];
+        for (let index = 0; index < points.length; index++) {
+          const point = points[index];
+          pointHtml.push(`<div onclick="removePoint(event, ${index})" class="point" style="top: ${point.y - 14}px;left: ${point.x - 14}px;" >${index+1}</div>`)
+        }
+        captcha.innerHTML = pointHtml.join('\n')
+      }
+
+      function removePoint(e, index) {
+        e.stopPropagation();
+        if (index < points.length - 1) return;
+        points.splice(index, 1);
+        renderPoint();
+        return false;
+      }
+
+      function submit() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "./check", true);
+        xhr.setRequestHeader('content-type', 'application/json');
+        //将用户输入值序列化成字符串
+        xhr.send(JSON.stringify(points));
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == 4) {
+            var result = JSON.parse(xhr.responseText);	
+            if(result.pass){
+              alert('验证码正确');
+            } else {
+              alert('验证码错误');
+            }  
+            window.location.reload(true);
+          }
+        }
+      }
+
+      function addPoint(e) {
+        points.push({
+          x: e.clientX - captcha.getBoundingClientRect().x,
+          y: e.clientY - captcha.getBoundingClientRect().y,
+        })
+        renderPoint()
+        if (points.length >= Number('<%=count%>')) {
+          submit();
+        }
+      }
+    </script>
+  </body>
+</html>
