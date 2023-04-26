@@ -38,8 +38,6 @@ interface ClickCaptchaResult {
 
 class ClickCaptchaError extends Error {}
 
-export const DEFAULT_BG = () => "https://api.ixiaowai.cn/gqapi/gqapi.php";
-
 export const DEFAULT_CHARACTER = fs
   .readFileSync(path.resolve(__dirname, "./character.txt"), "utf-8")
   .split(",")
@@ -49,7 +47,7 @@ export const DEFAULT_CHARACTER = fs
 class ClickCaptcha {
   config: ClickCaptchaConfig = {
     character: DEFAULT_CHARACTER,
-    bg: DEFAULT_BG,
+    bg: undefined,
     familys: ["sans-serif"],
     width: 300,
     height: 200,
@@ -123,8 +121,9 @@ class ClickCaptcha {
    * @param height
    * @returns
    */
-  getBg(width: number, height: number) {
-    return this.config.bg?.(width, height) ?? DEFAULT_BG();
+  async getBg(width: number, height: number) {
+    if (!this.config.bg) throw new Error("place set bg option");
+    return await this.config.bg(width, height);
   }
 
   /**
@@ -173,7 +172,7 @@ class ClickCaptcha {
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext("2d");
 
-    const img = await loadImage(this.getBg(width, height));
+    const img = await loadImage(await this.getBg(width, height));
 
     ctx.drawImage(img, 0, 0, width, height);
 
