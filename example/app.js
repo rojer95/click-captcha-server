@@ -18,12 +18,15 @@ app.use(
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "./views"));
 
-const clickCaptcha = new ClickCaptcha();
+const clickCaptcha = new ClickCaptcha({
+  unsplashAccessKey: "ATRkCDp9Tj7Y5Sd197rWgc8sNl-BwaobjvebF3WDCsw",
+});
 
 app.get("/", async (req, res) => {
-  const { img, front, answer, count } = await clickCaptcha.generate();
+  const { img, front, answer, count, copyright } =
+    await clickCaptcha.generate();
   req.session.answer = answer;
-  res.render("index", { img, front, count });
+  res.render("index", { img, front, count, copyright });
 });
 
 app.post("/check", async (req, res) => {
