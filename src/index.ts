@@ -138,7 +138,6 @@ class ClickCaptcha {
         orientation: "landscape",
         contentFilter: "high",
       });
-      console.log(photo?.response);
       const bg = photo?.response?.urls?.small;
       return {
         bg,
