@@ -138,11 +138,18 @@ class ClickCaptcha {
         orientation: "landscape",
         contentFilter: "high",
       });
-      const bg = photo?.response?.urls?.small;
-      return {
-        bg,
-        copyright: `Photo by <a href="${photo?.response?.user?.html}">${photo?.response?.user?.name}</a> on <a href="https://unsplash.com/">Unsplash</a>`,
-      };
+      if (photo.type === "success") {
+        const bg = photo?.response?.urls?.small;
+        await this.unsplash.photos.trackDownload({
+          downloadLocation: photo?.response?.links?.download_location,
+        });
+        return {
+          bg,
+          copyright: `Photo by <a href="${photo?.response?.user?.links?.html}">${photo?.response?.user?.name}</a> on <a href="https://unsplash.com/">Unsplash</a>`,
+        };
+      } else {
+        throw new Error("unsplash fail");
+      }
     }
 
     if (this.config.bg) {
